@@ -7,7 +7,7 @@ By default the maze is a text file where
   the paths are ' ' and
   the solved paths are '*'
 
-Currently present solving methods:
+Solving methods present currently:
   1. Depth First Search
   2. Breadth First Search
   3. Greedy Best-First Search (_using Manhattan Distance_)
