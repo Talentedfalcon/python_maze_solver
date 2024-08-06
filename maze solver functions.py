@@ -130,6 +130,43 @@ class Maze():
                     child=Node(state=state,parent=node,action=action)
                     frontier.add(child)
 
+    '''Solve the maze using Breadth First Search'''
+    def solveBFS(self):
+        self.num_explored=0
+        start=Node(state=self.start,parent=None,action=None)
+
+        #Change to Stack or Queue to get DFS or BFS respectively 
+        frontier=QueueFrontier()
+        frontier.add(start)
+
+        self.explored=set()
+
+        while True:
+            if(frontier.empty()):
+                raise Exception ("no solution")
+            
+            node = frontier.remove()
+            self.num_explored+=1
+
+            if(node.state==self.end):
+                actions=[]
+                cells=[]
+                while node.parent is not None:
+                    actions.append(node.action)
+                    cells.append(node.state)
+                    node=node.parent
+                actions.reverse()
+                cells.reverse()
+                self.solution=(actions,cells)
+                return
+
+            self.explored.add(node.state);
+
+            for action,state in self.findNeighbours(node.state):
+                if not frontier.contain_state(state) and state not in self.explored:
+                    child=Node(state=state,parent=node,action=action)
+                    frontier.add(child)
+
     def showSolution(self):
         self.print()
         print(f"Number of states explored: {self.num_explored}")
@@ -147,5 +184,6 @@ class Maze():
         print()
 
 maze1 = Maze('maze1.txt')
-maze1.solveDFS()
+# maze1.solveDFS()
+maze1.solveBFS() 
 maze1.showSolution()
