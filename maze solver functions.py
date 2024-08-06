@@ -224,6 +224,57 @@ class Maze():
                     frontier.append(child)
             frontier.sort(key= lambda node:self.distances[node.state[0]][node.state[1]])
 
+    '''Solve the maze using A* algorithm'''
+    def solveAStar(self):
+        self.calculateDist()
+
+        costs=[]
+        for r in range(self.rows):
+            row=[]
+            for c in range(self.columns):
+                row.append(0)
+            costs.append(row)
+
+        self.explored=set()
+        self.num_explored=0
+        start=Node(self.start,None,None)
+        frontier=[]
+        frontier.append(start)
+        while True:
+            if len(frontier)==0:
+                raise Exception ("no solution")
+            node=frontier[0]
+            frontier=frontier[1:]
+            self.num_explored+=1
+
+            if(node.state==self.end):
+                actions=[]
+                cells=[]
+                while node.parent is not None:
+                    actions.append(node.action)
+                    cells.append(node.state)
+                    node=node.parent
+                actions.reverse()
+                cells.reverse()
+                self.solution=(actions,cells)
+                break
+
+            self.explored.add(node.state)
+
+            for action,(r,c) in self.findUnexploredNeighbours(node.state):
+                if ((r,c) not in self.explored):
+                    costs[r][c]=costs[node.state[0]][node.state[1]]+1
+                    child=Node((r,c),node,action)
+                    frontier.append(child)
+            frontier.sort(key= lambda node:((self.distances[node.state[0]][node.state[1]])+(costs[node.state[0]][node.state[1]])))
+        
+        # # Check the final (distance + cost) of the maze
+        # for r in range(self.rows):
+        #     for c in range(self.columns):
+        #         self.distances[r][c]+=costs[r][c]
+        # for i in self.distances:
+        #     print(i)
+
     def showSolution(self):
         self.print()
         print(f"Number of states explored: {self.num_explored}")
@@ -243,5 +294,6 @@ class Maze():
 maze1 = Maze('maze1.txt')
 # maze1.solveDFS()
 # maze1.solveBFS()
-maze1.solveGreedyBestFirst()
+# maze1.solveGreedyBestFirst()
+maze1.solveAStar()
 maze1.showSolution()
