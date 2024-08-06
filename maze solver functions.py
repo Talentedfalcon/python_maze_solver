@@ -64,7 +64,7 @@ class Maze():
         self.rows=len(self.walls)
         self.columns=max(len(row) for row in self.walls)
 
-    
+    '''Print out the maze'''
     def print(self):
         for i in self.walls:
             for j in i:
@@ -92,6 +92,28 @@ class Maze():
             except IndexError:
                 continue
         return result
+    
+    '''Find all the unexplored neighbours of the given cell'''
+    def findUnexploredNeighbours(self,state):
+        result=[]
+        for action,state in self.findNeighbours(state=state):
+            if(state not in self.explored):
+                result.append((action,state))
+        return result
+    
+    '''Calculate the Manhattan Distance from the goal for each cell of the maze'''
+    def calculateDist(self):
+        self.distances=[]
+        for r in range(0,self.rows):
+            row=[]
+            for c in range(0,self.columns):
+                if(self.walls[r][c]!="█"):
+                    row.append(abs(self.end[0]-r)+abs(self.end[1]-c))
+                else:
+                    row.append(-1)
+            self.distances.append(row)
+        # for i in self.distances:
+        #     print(i)
     
     '''Solve the maze using Depth First Search'''
     def solveDFS(self):
@@ -167,6 +189,41 @@ class Maze():
                     child=Node(state=state,parent=node,action=action)
                     frontier.add(child)
 
+    '''Solve the maze using Greedy Best-First Search using Manhanttan Distance as the hueristic function'''
+    def solveGreedyBestFirst(self):
+        self.calculateDist()
+        self.explored=set()
+        self.num_explored=0
+        start=Node(self.start,None,None)
+        frontier=[]
+        frontier.append(start)
+        while True:
+            if len(frontier)==0:
+                raise Exception ("no solution")
+            node=frontier[0]
+            frontier=frontier[1:]
+            self.num_explored+=1
+
+            if(node.state==self.end):
+                actions=[]
+                cells=[]
+                while node.parent is not None:
+                    actions.append(node.action)
+                    cells.append(node.state)
+                    node=node.parent
+                actions.reverse()
+                cells.reverse()
+                self.solution=(actions,cells)
+                return
+
+            self.explored.add(node.state)
+
+            for action,state in self.findUnexploredNeighbours(node.state):
+                if (state not in self.explored):
+                    child=Node(state,node,action)
+                    frontier.append(child)
+            frontier.sort(key= lambda node:self.distances[node.state[0]][node.state[1]])
+
     def showSolution(self):
         self.print()
         print(f"Number of states explored: {self.num_explored}")
@@ -185,5 +242,6 @@ class Maze():
 
 maze1 = Maze('maze1.txt')
 # maze1.solveDFS()
-maze1.solveBFS() 
+# maze1.solveBFS()
+maze1.solveGreedyBestFirst()
 maze1.showSolution()
