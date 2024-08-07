@@ -324,6 +324,7 @@ class Maze():
                     child=Node(state,node,action)
                     frontier.add(child)
 
+    '''Shows the final maze along with the paths explored'''
     def showSolution(self):
         self.showSteps()
         solution=[]
@@ -334,7 +335,6 @@ class Maze():
             actions,cells=self.solution
         except:
             raise Exception("maze not solved yet")
-        solution[self.start[0]][self.start[1]]='*'
         for r,c in cells[:-1]:
             solution[r][c]="*"
         for i in solution:
@@ -343,6 +343,7 @@ class Maze():
             print()
         print()
 
+    '''Shows the paths explored by the solving algorithm thus far'''
     def showSteps(self):
         currentMaze=[]
         for i in self.walls:
@@ -362,7 +363,7 @@ class Maze():
             for i in range(self.rows+2):
                 print(end='\033[A')
             print()
-        time.sleep(0.3)
+        time.sleep(0.05)
         
 
 
