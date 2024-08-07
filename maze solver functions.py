@@ -67,8 +67,11 @@ class Maze():
         self.rows=len(self.walls)
         self.columns=max(len(row) for row in self.walls)
 
-    '''Print out the maze'''
-    def print(self):
+    '''Print the maze with every change that happens to it (overwrites the previous render)'''
+    # def renderMaze(self):
+
+    '''Print out the maze as it is'''
+    def printMaze(self):
         print()
         for i in self.walls:
             for j in i:
@@ -279,12 +282,13 @@ class Maze():
             frontier.sort(key= lambda node:((self.distances[node.state[0]][node.state[1]])+(costs[node.state[0]][node.state[1]])))
         
         # # Check the final (distance + cost) of the maze
-        # for r in range(self.rows):
-        #     for c in range(self.columns):
-        #         self.distances[r][c]+=costs[r][c]
+        # for i in costs:
+        #     print(i)
+        # print()
         # for i in self.distances:
         #     print(i)
 
+    '''Search through the maze randomly'''
     def solveRandom(self):
         start=Node(self.start,None,None)
         frontier=StackFrontier()
@@ -321,7 +325,7 @@ class Maze():
                     frontier.add(child)
 
     def showSolution(self):
-        self.print()
+        self.showSteps()
         solution=[]
         for i in self.walls:
             solution.append(i.copy())
@@ -349,21 +353,23 @@ class Maze():
         except:
             raise Exception("nothing explored so far")
         for r,c in states:
-            currentMaze[r][c]="@"
+            currentMaze[r][c]="!"
         for i in currentMaze:
             for j in i:
                 print(j,end="")
             print()
-        for i in range(self.rows+1):
-            print(end='\033[A')
-        time.sleep(0.05)
+        if not hasattr(self,'solution'):
+            for i in range(self.rows+2):
+                print(end='\033[A')
+            print()
+        time.sleep(0.3)
         
 
 
-maze1 = Maze('maze3.txt')
+maze1 = Maze('maze1.txt')
 # maze1.solveDFS()
 # maze1.solveBFS()
 # maze1.solveGreedyBestFirst()
-maze1.solveAStar()
-# maze1.solveRandom()
+# maze1.solveAStar()
+maze1.solveRandom()
 maze1.showSolution()
