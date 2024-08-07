@@ -1,3 +1,6 @@
+import random
+import time
+
 '''A data structure to represent a cell in the maze, a parent node and the action taken to reach that parent node'''
 class Node():
     def __init__(self,state,parent,action):
@@ -87,7 +90,7 @@ class Maze():
         result=[]
         for action,(r,c) in candidates:
             try:
-                if self.walls[r][c]!='█':
+                if self.walls[r][c]!='█' and r>=0 and c>=0:
                     result.append((action,(r,c)))
             except IndexError:
                 continue
@@ -127,6 +130,7 @@ class Maze():
         self.explored=set()
 
         while True:
+            self.showSteps()
             if(frontier.empty()):
                 raise Exception ("no solution")
             
@@ -164,6 +168,7 @@ class Maze():
         self.explored=set()
 
         while True:
+            self.showSteps()
             if(frontier.empty()):
                 raise Exception ("no solution")
             
@@ -198,6 +203,7 @@ class Maze():
         frontier=[]
         frontier.append(start)
         while True:
+            self.showSteps()
             if len(frontier)==0:
                 raise Exception ("no solution")
             node=frontier[0]
@@ -241,8 +247,52 @@ class Maze():
         frontier=[]
         frontier.append(start)
         while True:
+            self.showSteps()
             if len(frontier)==0:
                 raise Exception ("no solution")
+            node=frontier[0]
+            frontier=frontier[1:]
+            self.num_explored+=1
+
+            if(node.state==self.end):
+                print("hello")
+                actions=[]
+                cells=[]
+                while node.parent is not None:
+                    actions.append(node.action)
+                    cells.append(node.state)
+                    node=node.parent
+                actions.reverse()
+                cells.reverse()
+                self.solution=(actions,cells)
+                break
+
+            self.explored.add(node.state)
+            for action,(r,c) in self.findUnexploredNeighbours(node.state):
+                costs[r][c]=costs[node.state[0]][node.state[1]]+1
+                child=Node((r,c),node,action)
+                if(child not in frontier):
+                    frontier.append(child)
+            frontier.sort(key= lambda node:((self.distances[node.state[0]][node.state[1]])+(costs[node.state[0]][node.state[1]])))
+        
+        # # Check the final (distance + cost) of the maze
+        # for r in range(self.rows):
+        #     for c in range(self.columns):
+        #         self.distances[r][c]+=costs[r][c]
+        # for i in self.distances:
+        #     print(i)
+
+    def solveRandom(self):
+        start=Node(self.start,None,None)
+        frontier=[]
+        frontier.append(start)
+        self.num_explored=0
+        self.explored=set()
+        while True:
+            self.showSteps()
+            if(len(frontier)==0):
+                raise Exception ("no solution")
+
             node=frontier[0]
             frontier=frontier[1:]
             self.num_explored+=1
@@ -257,32 +307,27 @@ class Maze():
                 actions.reverse()
                 cells.reverse()
                 self.solution=(actions,cells)
-                break
-
+                return
+        
             self.explored.add(node.state)
 
-            for action,(r,c) in self.findUnexploredNeighbours(node.state):
-                if ((r,c) not in self.explored):
-                    costs[r][c]=costs[node.state[0]][node.state[1]]+1
-                    child=Node((r,c),node,action)
-                    frontier.append(child)
-            frontier.sort(key= lambda node:((self.distances[node.state[0]][node.state[1]])+(costs[node.state[0]][node.state[1]])))
-        
-        # # Check the final (distance + cost) of the maze
-        # for r in range(self.rows):
-        #     for c in range(self.columns):
-        #         self.distances[r][c]+=costs[r][c]
-        # for i in self.distances:
-        #     print(i)
+            unexploredNeighbours=self.findUnexploredNeighbours(node.state)
+            random.shuffle(unexploredNeighbours)
+            for action,state in unexploredNeighbours:
+                child=Node(state,node,action)
+                frontier.append(child)
 
     def showSolution(self):
         self.print()
-        print(f"Number of states explored: {self.num_explored}")
-        solution = self.walls
+        solution=[]
+        for i in self.walls:
+            solution.append(i.copy())
         try:
+            print(f"Number of states explored: {self.num_explored}")
             actions,cells=self.solution
         except:
             raise Exception("maze not solved yet")
+        solution[self.start[0]][self.start[1]]='*'
         for r,c in cells[:-1]:
             solution[r][c]="*"
         for i in solution:
@@ -291,9 +336,30 @@ class Maze():
             print()
         print()
 
-maze1 = Maze('maze1.txt')
+    def showSteps(self):
+        currentMaze=[]
+        for i in self.walls:
+            currentMaze.append(i.copy())
+        try:
+            print(f"Number of states explored: {self.num_explored}")
+            states=self.explored
+        except:
+            raise Exception("nothing explored so far")
+        for r,c in states:
+            currentMaze[r][c]="@"
+        for i in currentMaze:
+            for j in i:
+                print(j,end="")
+            print()
+        print()
+        time.sleep(0.2)
+        
+
+
+maze1 = Maze('maze3.txt')
 # maze1.solveDFS()
 # maze1.solveBFS()
-# maze1.solveGreedyBestFirst()
-maze1.solveAStar()
+maze1.solveGreedyBestFirst()
+# maze1.solveAStar()
+# maze1.solveRandom()
 maze1.showSolution()
