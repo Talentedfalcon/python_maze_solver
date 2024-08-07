@@ -69,6 +69,7 @@ class Maze():
 
     '''Print out the maze'''
     def print(self):
+        print()
         for i in self.walls:
             for j in i:
                 print(j,end="");
@@ -225,7 +226,7 @@ class Maze():
             self.explored.add(node.state)
 
             for action,state in self.findUnexploredNeighbours(node.state):
-                if (state not in self.explored):
+                if not any(state==frontier_node.state for frontier_node in frontier):
                     child=Node(state,node,action)
                     frontier.append(child)
             frontier.sort(key= lambda node:self.distances[node.state[0]][node.state[1]])
@@ -255,7 +256,6 @@ class Maze():
             self.num_explored+=1
 
             if(node.state==self.end):
-                print("hello")
                 actions=[]
                 cells=[]
                 while node.parent is not None:
@@ -265,13 +265,18 @@ class Maze():
                 actions.reverse()
                 cells.reverse()
                 self.solution=(actions,cells)
+                for i in costs:
+                    print(i)
                 break
 
             self.explored.add(node.state)
             for action,(r,c) in self.findUnexploredNeighbours(node.state):
-                costs[r][c]=costs[node.state[0]][node.state[1]]+1
-                child=Node((r,c),node,action)
-                if(child not in frontier):
+                if not any((r,c)==frontier_node.state for frontier_node in frontier):
+                    if(costs[r][c]==0):
+                        costs[r][c]=costs[node.state[0]][node.state[1]]+1
+                    else:
+                        costs[r][c]=min(costs[r][c],costs[node.state[0]][node.state[1]]+1)
+                    child=Node((r,c),node,action)
                     frontier.append(child)
             frontier.sort(key= lambda node:((self.distances[node.state[0]][node.state[1]])+(costs[node.state[0]][node.state[1]])))
         
@@ -284,17 +289,16 @@ class Maze():
 
     def solveRandom(self):
         start=Node(self.start,None,None)
-        frontier=[]
-        frontier.append(start)
+        frontier=StackFrontier()
+        frontier.add(start)
         self.num_explored=0
         self.explored=set()
         while True:
             self.showSteps()
-            if(len(frontier)==0):
+            if(frontier.empty()):
                 raise Exception ("no solution")
 
-            node=frontier[0]
-            frontier=frontier[1:]
+            node=frontier.remove()
             self.num_explored+=1
 
             if(node.state==self.end):
@@ -314,8 +318,9 @@ class Maze():
             unexploredNeighbours=self.findUnexploredNeighbours(node.state)
             random.shuffle(unexploredNeighbours)
             for action,state in unexploredNeighbours:
-                child=Node(state,node,action)
-                frontier.append(child)
+                if(not frontier.contain_state(state)):
+                    child=Node(state,node,action)
+                    frontier.add(child)
 
     def showSolution(self):
         self.print()
@@ -351,15 +356,16 @@ class Maze():
             for j in i:
                 print(j,end="")
             print()
-        print()
-        time.sleep(0.2)
+        for i in range(self.rows+1):
+            print(end='\033[A')
+        time.sleep(0.05)
         
 
 
 maze1 = Maze('maze3.txt')
 # maze1.solveDFS()
 # maze1.solveBFS()
-maze1.solveGreedyBestFirst()
-# maze1.solveAStar()
+# maze1.solveGreedyBestFirst()
+maze1.solveAStar()
 # maze1.solveRandom()
 maze1.showSolution()
