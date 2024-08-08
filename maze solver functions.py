@@ -67,9 +67,6 @@ class Maze():
         self.rows=len(self.walls)
         self.columns=max(len(row) for row in self.walls)
 
-    '''Print the maze with every change that happens to it (overwrites the previous render)'''
-    # def renderMaze(self):
-
     '''Print out the maze as it is'''
     def printMaze(self):
         print()
@@ -132,6 +129,7 @@ class Maze():
         frontier.add(start)
 
         self.explored=set()
+        self.solution=None;
 
         while True:
             self.showSteps()
@@ -170,6 +168,7 @@ class Maze():
         frontier.add(start)
 
         self.explored=set()
+        self.solution=None;
 
         while True:
             self.showSteps()
@@ -202,6 +201,7 @@ class Maze():
     def solveGreedyBestFirst(self):
         self.calculateDist()
         self.explored=set()
+        self.solution=None;
         self.num_explored=0
         start=Node(self.start,None,None)
         frontier=[]
@@ -246,6 +246,7 @@ class Maze():
             costs.append(row)
 
         self.explored=set()
+        self.solution=None;
         self.num_explored=0
         start=Node(self.start,None,None)
         frontier=[]
@@ -295,6 +296,7 @@ class Maze():
         frontier.add(start)
         self.num_explored=0
         self.explored=set()
+        self.solution=None;
         while True:
             self.showSteps()
             if(frontier.empty()):
@@ -323,6 +325,9 @@ class Maze():
                 if(not frontier.contain_state(state)):
                     child=Node(state,node,action)
                     frontier.add(child)
+
+    '''Solve the maze using Flood Fill Method'''
+    # def solveFloodFill():
 
     '''Shows the final maze along with the paths explored'''
     def showSolution(self):
@@ -359,7 +364,7 @@ class Maze():
             for j in i:
                 print(j,end="")
             print()
-        if not hasattr(self,'solution'):
+        if not hasattr(self,'solution') or self.solution==None:
             for i in range(self.rows+2):
                 print(end='\033[A')
             print()
