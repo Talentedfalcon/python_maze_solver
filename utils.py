@@ -1,5 +1,4 @@
 '''A data structure to represent a cell in the maze, a parent node and the action taken to reach that parent node'''
-
 class Node():
     def __init__(self,state,parent,action):
         self.state=state
