@@ -97,10 +97,17 @@ class MazeGen():
         print()
 
     def saveMaze(self):
+        file=open('maze.txt','w')
         for i in range(len(self.maze)):
             for j in range(len(self.maze)):
-                return
+                if(self.maze[i][j]=='█'):
+                    file.write('#')
+                else:
+                    file.write(self.maze[i][j])
+            if(i!=len(self.maze)-1):
+                file.write('\n')
 
 maze1=MazeGen()
 maze1.randomDFSGen(15,(4,3),(0,3))
+maze1.saveMaze()
 maze1.printMaze()

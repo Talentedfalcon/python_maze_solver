@@ -335,7 +335,7 @@ class Maze():
         
 
 
-maze1 = Maze('maze4.txt')
+maze1 = Maze('maze.txt')
 # maze1.solveDFS() 
 # maze1.solveBFS()
 # maze1.solveGreedyBestFirst()
