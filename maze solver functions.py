@@ -262,13 +262,14 @@ class Maze():
         frontier.add(start)
         self.num_explored=0
         self.explored=set()
-        self.solution=None;
+        self.solution=None
         while True:
             self.showSteps()
             if(frontier.empty()):
                 raise Exception ("no solution")
 
-            node=frontier.remove()
+            node=random.choice(frontier.frontier)
+            frontier.frontier.remove(node)
             self.num_explored+=1
 
             if(node.state==self.end):
@@ -286,7 +287,7 @@ class Maze():
             self.explored.add(node.state)
 
             unexploredNeighbours=self.findUnexploredNeighbours(node.state)
-            random.shuffle(unexploredNeighbours)
+            #random.shuffle(unexploredNeighbours)
             for action,state in unexploredNeighbours:
                 if(not frontier.contain_state(state)):
                     child=Node(state,node,action)
@@ -307,7 +308,7 @@ class Maze():
             solution[r][c]="*"
         for i in solution:
             for j in i:
-                print(j,end="");
+                print(j,end="")
             print()
         print()
 
