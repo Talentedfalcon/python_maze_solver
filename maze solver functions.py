@@ -296,11 +296,13 @@ class Maze():
     '''Shows the final maze along with the paths explored'''
     def showSolution(self):
         self.showSteps()
+        for i in range(self.rows+2):
+            print(end='\033[A')
+        print()
         solution=[]
         for i in self.walls:
             solution.append(i.copy())
         try:
-            print(f"Number of states explored: {self.num_explored}")
             actions,cells=self.solution
         except:
             raise Exception("maze not solved yet")
@@ -310,6 +312,7 @@ class Maze():
             for j in i:
                 print(j,end="")
             print()
+        print(f"Number of states explored: {self.num_explored}")
         print()
 
     '''Shows the paths explored by the solving algorithm thus far'''
@@ -318,7 +321,6 @@ class Maze():
         for i in self.walls:
             currentMaze.append(i.copy())
         try:
-            print(f"Number of states explored: {self.num_explored}")
             states=self.explored
         except:
             raise Exception("nothing explored so far")
@@ -328,6 +330,7 @@ class Maze():
             for j in i:
                 print(j,end="")
             print()
+        print(f"Number of states explored: {self.num_explored}")
         if not hasattr(self,'solution') or self.solution==None:
             for i in range(self.rows+2):
                 print(end='\033[A')
