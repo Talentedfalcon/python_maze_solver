@@ -51,11 +51,11 @@ class MazeGen():
         return result
 
     '''Generates the maze using Random Depth First Search Algorithm'''
-    def randomDFSGen(self,num_row,num_col,start,end):
+    def randomDFSGen(self,num_row,num_col,start,end,showStep=True,saveMaze=True):
         # Make the walls and place start and end points
+        if(showStep):
+            print(end='\033[H\033[J')
         self.fillWalls(num_row,num_col)
-        # self.printMaze()
-
         if(self.validCoord(num_row,num_col,start)):
             self.maze[start[0]][start[1]]="A"
             self.start=start
@@ -76,19 +76,27 @@ class MazeGen():
         while True:
             node=frontier.remove()
             if(node.state==self.end):
-                return
+                break
             else:
                 if(node.state!=self.start):
                     self.maze[node.state[0]][node.state[1]]=" "
+                    if(showStep):
+                        print(end='\033[H')
+                        self.printMaze()
                 self.explored.add(node.state)
                 unexploredNeighbours=self.findUnexploredNeighbours(node.state)
                 random.shuffle(unexploredNeighbours)
                 for action,state in unexploredNeighbours:
                     if(state==self.end):
+                        if(saveMaze):
+                            self.saveMaze('maze.txt')
                         return
                     elif(not frontier.contain_state(state)):
                         child=Node(state,node,action)
                         frontier.add(child)
+        if(saveMaze):
+            self.saveMaze('maze.txt')
+
 
     def choose_random_node(self,num_row,num_col,InTree):
         while True:
@@ -123,7 +131,6 @@ class MazeGen():
                 next.append(next_state)
                 if(showStep):
                     print(end='\033[H')
-                    time.sleep(0.1)
                     self.printMaze()
                 return 1
             else:
@@ -133,7 +140,6 @@ class MazeGen():
                     self.maze[remove_path[0]][remove_path[1]]='█'
                 if(showStep):
                     print(end='\033[H')
-                    time.sleep(0.1)
                     self.printMaze()
                 return 1
 
@@ -141,7 +147,7 @@ class MazeGen():
     def wilsonGen(self,num_row,num_col,start,end,showStep=True,saveMaze=True):
         if(showStep):
             print(end='\033[H\033[J')
-        
+
         if(num_row%2==0):
             num_row+=1
         if(num_col%2==0):
@@ -185,14 +191,13 @@ class MazeGen():
                 InTree.add(next[i])
             if(showStep):
                 print(end='\033[H')
-                time.sleep(0.1)
                 self.printMaze()
             iterations+=1
         if(saveMaze):
             self.saveMaze('maze.txt')
 
     def printMaze(self):
-        print(end='\033[H\033[J')
+        print(end='\033[H')
         for i in range(len(self.maze)):
             for j in range(len(self.maze[i])):
                 print(self.maze[i][j],end="")
@@ -212,5 +217,5 @@ class MazeGen():
 
 maze1=MazeGen()
 # maze1.randomDFSGen(30,50,(0,0),(29,49))
-maze1.wilsonGen(12,12,(0,0),(10,10))
+maze1.wilsonGen(30,50,(0,0),(29,49))
 maze1.printMaze()

@@ -337,9 +337,9 @@ class Maze():
 
 
 maze1 = Maze('maze.txt')
-# maze1.solveDFS() 
+# maze1.solveDFS()
 # maze1.solveBFS()
 # maze1.solveGreedyBestFirst()
-# maze1.solveAStar()
-maze1.solveRandom()
+maze1.solveAStar()
+# maze1.solveRandom()
 maze1.showSolution()
